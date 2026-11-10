@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BitBox | Catálogo Gamer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #05060d;
+    --panel: #0c1022;
+    --panel-2: #121934;
+    --text: #e8f7ff;
+    --muted: #7f8fb8;
+    --neon-cyan: #00f0ff;
+    --neon-pink: #ff2e88;
+    --neon-green: #39ff88;
+    --neon-yellow: #ffe600;
+    --border: rgba(0, 240, 255, 0.25);
+  }
+  [hidden] { display: none !important; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Rajdhani", "Segoe UI", system-ui, sans-serif;
+    font-size: 17px;
+    background:
+      radial-gradient(ellipse at top, rgba(255,46,136,.18), transparent 60%),
+      radial-gradient(ellipse at bottom, rgba(0,240,255,.15), transparent 60%),
+      var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    position: relative;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      linear-gradient(rgba(0,240,255,.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,240,255,.06) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: linear-gradient(180deg, transparent, #000 30%, #000 70%, transparent);
+  }
+  body::after {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 1;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 1px, transparent 1px 3px);
+    opacity: .5;
+  }
+  .wrap { position: relative; z-index: 2; max-width: 1150px; margin: 0 auto; padding: 0 16px; }
+
+  header { padding: 28px 0 10px; text-align: center; }
+  .logo {
+    font-family: "Orbitron", sans-serif; font-weight: 800; font-size: clamp(2rem, 6vw, 3.2rem);
+    letter-spacing: 4px; margin: 0;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 0 12px rgba(0,240,255,.45));
+  }
+  .logo span { -webkit-text-fill-color: var(--neon-yellow); color: var(--neon-yellow); }
+  .subtitle {
+    font-family: "Orbitron", sans-serif; font-size: .75rem; letter-spacing: 3px;
+    color: var(--neon-green); margin: 8px 0 0; text-transform: uppercase;
+  }
+  .hud { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px 0 6px; }
+  .hud-item {
+    background: rgba(12,16,34,.7); border: 1px solid var(--border);
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    padding: 10px; text-align: center;
+  }
+  .hud-item b { display: block; font-family: "Orbitron", sans-serif; font-size: 1.3rem; color: var(--neon-cyan); }
+  .hud-item small { color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; font-size: .75rem; }
+
+  .controls { display: grid; gap: 14px; margin: 18px 0 22px; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+  .tab {
+    font-family: "Orbitron", sans-serif; font-size: .72rem; letter-spacing: 1px; text-transform: uppercase;
+    background: transparent; color: var(--muted); border: 1px solid var(--border);
+    padding: 11px 16px; cursor: pointer; transition: all .2s;
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  }
+  .tab:hover { color: var(--text); border-color: var(--neon-cyan); }
+  .tab[aria-selected="true"] {
+    color: #05060d; background: var(--neon-cyan); border-color: var(--neon-cyan);
+    box-shadow: 0 0 18px rgba(0,240,255,.6);
+  }
+  .tab.tab-request { border-color: var(--neon-pink); color: var(--neon-pink); }
+  .tab.tab-request[aria-selected="true"] { background: var(--neon-pink); color: #05060d; box-shadow: 0 0 18px rgba(255,46,136,.6); }
+  .search-box { position: relative; }
+  .search {
+    width: 100%; padding: 14px 16px 14px 44px; background: var(--panel);
+    border: 1px solid var(--border); color: var(--text); font: inherit; font-size: 1.05rem;
+  }
+  .search::placeholder { color: var(--muted); }
+  .search:focus { outline: none; border-color: var(--neon-pink); box-shadow: 0 0 14px rgba(255,46,136,.4); }
+  .search-box::before {
+    content: "⌕"; position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+    color: var(--neon-cyan); font-size: 1.2rem;
+  }
+  .count {
+    font-family: "Orbitron", sans-serif; font-size: .7rem; letter-spacing: 2px;
+    color: var(--neon-green); text-align: center; text-transform: uppercase; margin: 0;
+  }
+
+  main {
+    display: grid; gap: 18px; padding-bottom: 40px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+  .card {
+    position: relative; background: var(--panel); border: 1px solid var(--border);
+    display: flex; flex-direction: column; overflow: hidden;
+    clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+    animation: pop .4s ease both;
+  }
+  .card::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 4;
+    background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,.12) 50%, transparent 60%);
+    transform: translateX(-100%); transition: transform .6s;
+  }
+  .card:hover { transform: translateY(-4px); border-color: var(--neon-pink); box-shadow: 0 0 22px rgba(255,46,136,.35); }
+  .card:hover::before { transform: translateX(100%); }
+  @keyframes pop { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+  .media {
+    position: relative; aspect-ratio: 3 / 4; background: var(--panel-2);
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+  }
+  .media .ph {
+    font-family: "Orbitron", sans-serif; font-size: 2.4rem; font-weight: 800; color: var(--neon-cyan);
+    text-shadow: 0 0 14px rgba(0,240,255,.7);
+  }
+  .media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .media::after {
+    content: ""; position: absolute; inset: auto 0 0 0; height: 45%;
+    background: linear-gradient(transparent, var(--panel));
+  }
+  .tag {
+    position: absolute; top: 10px; left: 10px; z-index: 2;
+    font-family: "Orbitron", sans-serif; font-size: .6rem; letter-spacing: 1px; text-transform: uppercase;
+    padding: 4px 8px; background: var(--neon-pink); color: #05060d; font-weight: 800;
+  }
+  .more {
+    position: absolute; top: 8px; right: 8px; z-index: 3;
+    width: 36px; height: 36px; border: 1px solid var(--neon-cyan);
+    background: rgba(5,6,13,.85); color: var(--neon-cyan);
+    font-size: 1.3rem; font-weight: 800; line-height: 1; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .more:hover { background: var(--neon-cyan); color: #05060d; box-shadow: 0 0 14px rgba(0,240,255,.7); }
+  .body { padding: 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .cat {
+    font-size: .72rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--neon-yellow); font-weight: 700;
+  }
+  .name { margin: 0; font-family: "Rajdhani", sans-serif; font-size: 1.2rem; font-weight: 700; line-height: 1.2; }
+
+  .btn {
+    margin-top: auto; display: block; text-align: center; text-decoration: none; border: 0; cursor: pointer;
+    font-family: "Orbitron", sans-serif; font-weight: 800; font-size: .8rem; letter-spacing: 2px; text-transform: uppercase;
+    padding: 12px; color: #05060d; background: var(--neon-green);
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+    box-shadow: 0 0 14px rgba(57,255,136,.45); transition: box-shadow .2s, filter .2s;
+  }
+  .btn:hover { filter: brightness(1.1); box-shadow: 0 0 24px rgba(57,255,136,.8); }
+  .btn::after { content: " ▶"; }
+
+  .empty {
+    grid-column: 1 / -1; text-align: center; color: var(--muted); padding: 50px 0;
+    font-family: "Orbitron", sans-serif; letter-spacing: 2px; text-transform: uppercase; font-size: .85rem;
+  }
+
+  .service-banner {
+    display: grid; gap: 8px; text-align: center; margin: 0 0 22px; padding: 22px 24px;
+    background: var(--panel); border: 1px solid var(--neon-green);
+    box-shadow: 0 0 22px rgba(57,255,136,.25);
+    clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+  }
+  .service-banner h2 {
+    margin: 0; font-family: "Orbitron", sans-serif; font-size: .9rem; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--neon-green);
+  }
+  .service-banner p { margin: 0; font-size: 1.15rem; }
+  .service-banner .btn { max-width: 300px; margin: 10px auto 0; }
+
+  .about { max-width: 1150px; margin: 0 auto 30px; padding: 0 16px; position: relative; z-index: 2; }
+
+  /* Modal de informação */
+  .modal {
+    position: fixed; inset: 0; z-index: 50; display: none; align-items: center; justify-content: center;
+    background: rgba(0,0,0,.78); padding: 16px;
+  }
+  .modal.open { display: flex; }
+  .modal-box {
+    position: relative; width: 100%; max-width: 640px; max-height: 92vh; overflow: auto;
+    display: grid; grid-template-columns: 1fr 1.2fr;
+    background: var(--panel); border: 1px solid var(--neon-pink);
+    box-shadow: 0 0 30px rgba(255,46,136,.4);
+  }
+  @media (max-width: 560px) { .modal-box { grid-template-columns: 1fr; } }
+  .modal-img { position: relative; min-height: 240px; background: var(--panel-2); display: flex; align-items: center; justify-content: center; }
+  .modal-img .ph { font-family: "Orbitron", sans-serif; font-size: 2.4rem; font-weight: 800; color: var(--neon-cyan); }
+  .modal-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .modal-info { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+  .modal-info h2 { margin: 0; font-family: "Rajdhani", sans-serif; font-size: 1.5rem; line-height: 1.15; }
+  .modal-close {
+    position: absolute; top: 6px; right: 10px; z-index: 5; background: none; border: 0;
+    color: var(--neon-pink); font-size: 1.8rem; cursor: pointer; line-height: 1;
+  }
+  .stats { display: grid; gap: 0; }
+  .stat {
+    display: flex; justify-content: space-between; gap: 12px;
+    padding: 9px 0; border-bottom: 1px dashed var(--border);
+  }
+  .stat span { color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-size: .85rem; }
+  .stat b { color: var(--neon-cyan); font-family: "Orbitron", sans-serif; font-size: .8rem; text-align: right; }
+  .modal-info .btn { margin-top: 6px; }
+
+  .modal-video { position: relative; grid-column: 1 / -1; background: #000; min-height: 120px; border-top: 1px solid var(--border); }
+  .modal-video.has-video { aspect-ratio: 16 / 9; }
+  .modal-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .video-empty {
+    margin: 0; min-height: 120px; display: flex; align-items: center; justify-content: center;
+    font-family: "Orbitron", sans-serif; font-size: .75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--muted);
+  }
+
+  /* Formulário de pedido */
+  .request {
+    max-width: 640px; margin: 0 auto 40px; background: var(--panel); border: 1px solid var(--border);
+    padding: 24px; display: grid; gap: 16px;
+  }
+  .request h2 {
+    margin: 0; font-family: "Orbitron", sans-serif; font-size: 1rem; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--neon-pink); text-align: center;
+  }
+  .request > p { margin: 0; color: var(--muted); text-align: center; }
+  .field { display: grid; gap: 6px; font-weight: 700; color: var(--muted); letter-spacing: .5px; font-size: .95rem; }
+  .field input, .field select, .field textarea {
+    background: var(--bg); border: 1px solid var(--border); color: var(--text);
+    padding: 11px 12px; font: inherit; font-size: 1rem;
+  }
+  .field textarea { min-height: 90px; resize: vertical; }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    outline: none; border-color: var(--neon-pink); box-shadow: 0 0 12px rgba(255,46,136,.35);
+  }
+  .field .req { color: var(--neon-pink); }
+  .request .btn { margin-top: 4px; }
+  .note { font-size: .9rem; color: var(--muted); text-align: center; margin: 0; }
+
+  footer {
+    position: relative; z-index: 2; text-align: center; padding: 22px 16px 32px;
+    border-top: 1px solid var(--border); color: var(--muted);
+  }
+  footer strong { color: var(--neon-cyan); font-family: "Orbitron", sans-serif; letter-spacing: 2px; font-size: .85rem; }
+  footer p { margin: 6px 0; }
+
+  @media (max-width: 480px) {
+    .hud { grid-template-columns: 1fr 1fr 1fr; }
+    .hud-item b { font-size: 1rem; }
+    .tab { font-size: .6rem; padding: 9px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1 class="logo">BIT<span>BOX</span></h1>
+    <p class="subtitle">▸ Escolhe o teu nível de jogo ◂</p>
+    <div class="hud">
+      <div class="hud-item"><b id="stat-total">0</b><small>Itens</small></div>
+      <div class="hud-item"><b>24/7</b><small>Suporte</small></div>
+      <div class="hud-item"><b>100%</b><small>Ativação segura</small></div>
+    </div>
+  </header>
+
+  <section class="service-banner">
+    <h2>Serviços técnicos BitBox</h2>
+    <p>Instalação de sistema operativo a preço acessível</p>
+    <p>Ativação de Windows e pacote Office</p>
+    <a class="btn" href="https://wa.me/244953936377?text=Ol%C3%A1%20BitBox!%20Quero%20informa%C3%A7%C3%B5es%20sobre%20instala%C3%A7%C3%A3o%20de%20sistema%20e%20ativa%C3%A7%C3%A3o." target="_blank" rel="noopener">Pedir instalação</a>
+  </section>
+
+  <section class="controls">
+    <nav class="tabs" role="tablist" aria-label="Categorias">
+      <button class="tab" role="tab" data-tab="todos" aria-selected="true">Todos</button>
+      <button class="tab" role="tab" data-tab="jogos" aria-selected="false">Jogos</button>
+      <button class="tab" role="tab" data-tab="sistemas" aria-selected="false">Sistemas</button>
+      <button class="tab" role="tab" data-tab="office" aria-selected="false">Pacote Office</button>
+      <button class="tab" role="tab" data-tab="adobe" aria-selected="false">Adobe</button>
+      <button class="tab" role="tab" data-tab="servicos" aria-selected="false">Serviços</button>
+      <button class="tab tab-request" role="tab" data-tab="pedir" aria-selected="false">Pedir Produto</button>
+    </nav>
+    <div class="search-box" id="search-box">
+      <input class="search" id="search" type="search" placeholder="Procurar jogo, sistema ou programa...">
+    </div>
+    <p class="count" id="count"></p>
+  </section>
+
+  <main id="grid"></main>
+
+  <section class="request" id="request" hidden>
+    <h2>Pedir um produto</h2>
+    <p>Não encontrou o que procura? Diga-nos e a BitBox vai avaliar a inclusão na plataforma.</p>
+    <form id="request-form" novalidate>
+      <label class="field">
+        <span>Tipo de produto <span class="req">*</span></span>
+        <select id="req-type" required>
+          <option value="">Escolha uma opção</option>
+          <option>Jogo</option>
+          <option>Sistema Operativo</option>
+          <option>Programa / Pacote Office</option>
+          <option>Adobe</option>
+          <option>Outro</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Nome do produto <span class="req">*</span></span>
+        <input id="req-name" type="text" placeholder="Ex.: FIFA 21, Windows 10 Home, Autodesk AutoCAD" required>
+      </label>
+      <label class="field">
+        <span>Versão ou ano</span>
+        <input id="req-version" type="text" placeholder="Ex.: 2021, versão 22H2">
+      </label>
+      <label class="field">
+        <span>Plataforma</span>
+        <select id="req-platform">
+          <option value="">Indiferente</option>
+          <option>PC</option>
+          <option>PS4</option>
+          <option>PS5</option>
+          <option>Xbox</option>
+          <option>PSP</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>O seu nome</span>
+        <input id="req-client" type="text" placeholder="Opcional">
+      </label>
+      <label class="field">
+        <span>Observações</span>
+        <textarea id="req-notes" placeholder="Outros detalhes que ajudem a encontrar o produto"></textarea>
+      </label>
+      <button class="btn" type="submit">Enviar pedido pelo WhatsApp</button>
+      <p class="note" id="req-msg"></p>
+    </form>
+  </section>
+</div>
+
+<div class="modal" id="info-modal" role="dialog" aria-modal="true" aria-labelledby="info-title">
+  <div class="modal-box">
+    <button class="modal-close" id="info-close" aria-label="Fechar">×</button>
+    <div class="modal-img" id="info-img"></div>
+    <div class="modal-info">
+      <span class="cat" id="info-cat"></span>
+      <h2 id="info-title"></h2>
+      <div class="stats">
+        <div class="stat"><span>Plataforma</span><b id="info-platform"></b></div>
+        <div class="stat"><span>Lançamento</span><b id="info-year"></b></div>
+        <div class="stat"><span>Tamanho</span><b id="info-gb"></b></div>
+        <div class="stat"><span>Preço</span><b id="info-price"></b></div>
+      </div>
+      <a class="btn" id="info-buy" target="_blank" rel="noopener">Obter</a>
+    </div>
+    <div class="modal-video" id="info-video"></div>
+  </div>
+</div>
+
+<section class="about">
+  <div class="service-banner">
+    <h2>Sobre a BitBox</h2>
+    <p>A BitBox é uma assistência técnica e de software. Nesta plataforma pode ver os jogos, sistemas operativos, programas e serviços disponíveis e pedir o que precisa pelo WhatsApp.</p>
+    <p>▸ Vendemos o setup de jogos para PC</p>
+    <p>▸ Instalamos jogos no PC do cliente</p>
+    <p>▸ Instalação de sistemas operativos a preço acessível</p>
+    <p>▸ Ativação de Windows e pacote Office</p>
+    <p>▸ Instalação de distribuições Linux e servidores</p>
+  </div>
+</section>
+
+<footer>
+  <p><strong>CONFIANÇA E EXCELÊNCIA TÉCNICA</strong></p>
+  <p>Dúvidas? Fala connosco no WhatsApp: +244 953 936 377</p>
+</footer>
+
+<script>
+  const WHATSAPP_NUMBER = "244953936377";
+
+  const CATEGORIES = {
+    jogos: "Jogo para PC",
+    sistemas: "Sistema Operativo",
+    office: "Pacote Office",
+    adobe: "Adobe",
+    servicos: "Serviço"
+  };
+
+  const SUPABASE_URL = "https://kbkpuligmyssdkvwuwto.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_KgZaT5PaKL0SUp0rP6eUcA_SZnnSLW6";
+
+  // Os produtos vêm da tabela "products" no Supabase
+  let ITEMS = [];
+  const ASSETS = {};
+  const VIDEOS = {};
+
+  const state = { tab: "todos", query: "" };
+  const grid = document.getElementById("grid");
+  const countEl = document.getElementById("count");
+  const searchEl = document.getElementById("search");
+  const searchBox = document.getElementById("search-box");
+  const requestSec = document.getElementById("request");
+  document.getElementById("stat-total").textContent = ITEMS.length;
+
+  function initials(name) {
+    return name.split(/\s+/).filter(w => /[A-Za-zÀ-ú0-9]/.test(w))
+      .slice(0, 2).map(w => w[0].toUpperCase()).join("");
+  }
+
+  function whatsappLink(item) {
+    const msg = `Olá BitBox! Quero obter: ${item.name} (${CATEGORIES[item.cat]}). Podem ajudar-me?`;
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+  }
+
+  function imageSrc(item) {
+    return ASSETS[item.img] || ("img/" + item.img);
+  }
+
+  function fillMedia(container, item, phClass) {
+    const ph = document.createElement("div");
+    ph.className = phClass;
+    ph.textContent = initials(item.name);
+    container.appendChild(ph);
+    const img = document.createElement("img");
+    img.alt = item.name;
+    img.loading = "lazy";
+    img.src = imageSrc(item);
+    img.onerror = () => img.remove();
+    container.appendChild(img);
+  }
+
+  /* ---------- Modal de informação ---------- */
+  const modal = document.getElementById("info-modal");
+
+  function openInfo(item) {
+    const imgBox = document.getElementById("info-img");
+    imgBox.innerHTML = "";
+    fillMedia(imgBox, item, "ph");
+
+    document.getElementById("info-cat").textContent = CATEGORIES[item.cat];
+    document.getElementById("info-title").textContent = item.name;
+    document.getElementById("info-year").textContent = item.cat === "servicos" ? "—" : (item.year || "A confirmar");
+    document.getElementById("info-gb").textContent = item.cat === "servicos" ? "—" : (item.gb ? item.gb + " GB" : "A confirmar");
+    document.getElementById("info-platform").textContent = item.cat === "jogos" ? "PC" : "—";
+    document.getElementById("info-price").textContent = item.price || "Consultar no WhatsApp";
+    document.getElementById("info-buy").href = whatsappLink(item);
+
+    const vbox = document.getElementById("info-video");
+    vbox.innerHTML = "";
+    vbox.classList.remove("has-video");
+    const vid = item.video || VIDEOS[item.name];
+    if (vid) {
+      // Abre o vídeo no YouTube a partir do segundo indicado (o vídeo incorporado é bloqueado nesta página)
+      const c = item.clip || { start: 0 };
+      const a = document.createElement("a");
+      a.className = "btn";
+      a.href = "https://youtu.be/" + vid + "?t=" + c.start;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.textContent = "Ver gameplay no YouTube";
+      a.style.maxWidth = "280px";
+      a.style.margin = "28px auto";
+      vbox.appendChild(a);
+    } else {
+      const p = document.createElement("p");
+      p.className = "video-empty";
+      p.textContent = "Gameplay em breve";
+      vbox.appendChild(p);
+    }
+
+    modal.classList.add("open");
+    document.getElementById("info-close").focus();
+  }
+
+  function closeInfo() {
+    modal.classList.remove("open");
+  }
+
+  document.getElementById("info-close").addEventListener("click", closeInfo);
+  modal.addEventListener("click", e => { if (e.target === modal) closeInfo(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeInfo(); });
+
+  /* ---------- Cartões ---------- */
+  function makeCard(item, index) {
+    const card = document.createElement("article");
+    card.className = "card";
+    card.style.animationDelay = (index * 0.03) + "s";
+
+    const media = document.createElement("div");
+    media.className = "media";
+    fillMedia(media, item, "ph");
+
+    if (item.hot) {
+      const tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent = "Popular";
+      media.appendChild(tag);
+    }
+
+    const more = document.createElement("button");
+    more.className = "more";
+    more.type = "button";
+    more.setAttribute("aria-label", "Ver informações de " + item.name);
+    more.title = "Informações";
+    more.textContent = "⋮";
+    more.addEventListener("click", () => openInfo(item));
+    media.appendChild(more);
+
+    const body = document.createElement("div");
+    body.className = "body";
+
+    const cat = document.createElement("span");
+    cat.className = "cat";
+    cat.textContent = CATEGORIES[item.cat];
+
+    const name = document.createElement("h3");
+    name.className = "name";
+    name.textContent = item.name;
+
+    const btn = document.createElement("a");
+    btn.className = "btn";
+    btn.href = whatsappLink(item);
+    btn.target = "_blank";
+    btn.rel = "noopener";
+    btn.textContent = "Obter";
+
+    body.append(cat, name, btn);
+    card.append(media, body);
+    return card;
+  }
+
+  function render() {
+    const q = state.query.trim().toLowerCase();
+    const list = ITEMS.filter(i =>
+      (state.tab === "todos" || i.cat === state.tab) &&
+      (!q || i.name.toLowerCase().includes(q))
+    );
+
+    grid.innerHTML = "";
+    if (list.length === 0) {
+      const empty = document.createElement("p");
+      empty.className = "empty";
+      empty.textContent = "Nenhum item encontrado";
+      grid.appendChild(empty);
+    } else {
+      list.forEach((i, idx) => grid.appendChild(makeCard(i, idx)));
+    }
+    countEl.textContent = `▸ ${list.length} ${list.length === 1 ? "item" : "itens"} encontrados ◂`;
+  }
+
+  /* ---------- Vista: catálogo ou pedido ---------- */
+  function setView() {
+    const isRequest = state.tab === "pedir";
+    requestSec.hidden = !isRequest;
+    grid.hidden = isRequest;
+    searchBox.hidden = isRequest;
+    countEl.hidden = isRequest;
+  }
+
+  document.querySelectorAll(".tab").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.tab = btn.dataset.tab;
+      document.querySelectorAll(".tab").forEach(b =>
+        b.setAttribute("aria-selected", b === btn ? "true" : "false"));
+      setView();
+      if (state.tab !== "pedir") render();
+    });
+  });
+
+  searchEl.addEventListener("input", e => {
+    state.query = e.target.value;
+    render();
+  });
+
+  /* ---------- Formulário de pedido ---------- */
+  document.getElementById("request-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const msgEl = document.getElementById("req-msg");
+    const tipo = document.getElementById("req-type").value;
+    const nome = document.getElementById("req-name").value.trim();
+
+    if (!tipo || !nome) {
+      msgEl.textContent = "Preencha o tipo de produto e o nome.";
+      msgEl.style.color = "var(--neon-pink)";
+      return;
+    }
+
+    const versao = document.getElementById("req-version").value.trim();
+    const plataforma = document.getElementById("req-platform").value;
+    const cliente = document.getElementById("req-client").value.trim();
+    const obs = document.getElementById("req-notes").value.trim();
+
+    const msg =
+      "Olá BitBox! Gostaria de pedir a inclusão de um produto na plataforma.\n" +
+      "Tipo: " + tipo + "\n" +
+      "Produto: " + nome + "\n" +
+      "Versão/Ano: " + (versao || "-") + "\n" +
+      "Plataforma: " + (plataforma || "Indiferente") + "\n" +
+      "Nome: " + (cliente || "-") + "\n" +
+      "Observações: " + (obs || "-");
+
+    window.open("https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
+    msgEl.style.color = "var(--neon-green)";
+    msgEl.textContent = "Pedido pronto. Confirme o envio na conversa do WhatsApp.";
+  });
+
+  // Aceita "5000", "5.000", "5.000 Kz" ou "5.000 kHz" e mostra sempre "5.000 Kz"
+  function formatPreco(v) {
+    if (v === null || v === undefined) return "";
+    const digits = String(v).replace(/[^0-9]/g, "");
+    if (!digits) return "";
+    return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " Kz";
+  }
+
+  async function loadProducts() {
+    try {
+      const res = await fetch(SUPABASE_URL + "/rest/v1/products?select=*&ativo=eq.true&order=id.asc", {
+        headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + SUPABASE_KEY }
+      });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const rows = await res.json();
+      ITEMS = rows.map(r => ({
+        cat: r.categoria,
+        name: r.nome,
+        img: r.imagem || "",
+        year: r.ano || "",
+        gb: r.tamanho_gb != null ? String(r.tamanho_gb) : "",
+        price: formatPreco(r.preco),
+        video: r.video_id || "",
+        hot: !!r.popular
+      }));
+    } catch (err) {
+      countEl.textContent = "▸ Não foi possível carregar o catálogo ◂";
+      console.error(err);
+    }
+    document.getElementById("stat-total").textContent = ITEMS.length;
+    setView();
+    render();
+  }
+
+  loadProducts();
+</script>
+</body>
+</html>
